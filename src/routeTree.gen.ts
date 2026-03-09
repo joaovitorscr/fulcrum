@@ -8,59 +8,102 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./routes/__root"
-import { Route as IndexRouteImport } from "./routes/index"
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as privateRouteRouteImport } from './routes/(private)/route'
+import { Route as privateIndexRouteImport } from './routes/(private)/index'
+import { Route as privateProjectsIndexRouteImport } from './routes/(private)/projects.index'
 
-const IndexRoute = IndexRouteImport.update({
-  id: "/",
-  path: "/",
+const privateRouteRoute = privateRouteRouteImport.update({
+  id: '/(private)',
   getParentRoute: () => rootRouteImport,
+} as any)
+const privateIndexRoute = privateIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => privateRouteRoute,
+} as any)
+const privateProjectsIndexRoute = privateProjectsIndexRouteImport.update({
+  id: '/projects/',
+  path: '/projects/',
+  getParentRoute: () => privateRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute
+  '/': typeof privateIndexRoute
+  '/projects/': typeof privateProjectsIndexRoute
 }
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute
+  '/': typeof privateIndexRoute
+  '/projects': typeof privateProjectsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  "/": typeof IndexRoute
+  '/(private)': typeof privateRouteRouteWithChildren
+  '/(private)/': typeof privateIndexRoute
+  '/(private)/projects/': typeof privateProjectsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: "/"
+  fullPaths: '/' | '/projects/'
   fileRoutesByTo: FileRoutesByTo
-  to: "/"
-  id: "__root__" | "/"
+  to: '/' | '/projects'
+  id: '__root__' | '/(private)' | '/(private)/' | '/(private)/projects/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  privateRouteRoute: typeof privateRouteRouteWithChildren
 }
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/": {
-      id: "/"
-      path: "/"
-      fullPath: "/"
-      preLoaderRoute: typeof IndexRouteImport
+    '/(private)': {
+      id: '/(private)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof privateRouteRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/(private)/': {
+      id: '/(private)/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof privateIndexRouteImport
+      parentRoute: typeof privateRouteRoute
+    }
+    '/(private)/projects/': {
+      id: '/(private)/projects/'
+      path: '/projects'
+      fullPath: '/projects/'
+      preLoaderRoute: typeof privateProjectsIndexRouteImport
+      parentRoute: typeof privateRouteRoute
     }
   }
 }
 
+interface privateRouteRouteChildren {
+  privateIndexRoute: typeof privateIndexRoute
+  privateProjectsIndexRoute: typeof privateProjectsIndexRoute
+}
+
+const privateRouteRouteChildren: privateRouteRouteChildren = {
+  privateIndexRoute: privateIndexRoute,
+  privateProjectsIndexRoute: privateProjectsIndexRoute,
+}
+
+const privateRouteRouteWithChildren = privateRouteRoute._addFileChildren(
+  privateRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  privateRouteRoute: privateRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 
-import type { getRouter } from "./router.tsx"
-import type { createStart } from "@tanstack/react-start"
-declare module "@tanstack/react-start" {
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
   interface Register {
     ssr: true
     router: Awaited<ReturnType<typeof getRouter>>

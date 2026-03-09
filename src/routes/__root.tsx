@@ -3,6 +3,7 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { TanStackDevtools } from "@tanstack/react-devtools"
 
 import appCss from "../styles.css?url"
+import { TooltipProvider } from "@/components/ui/tooltip"
 
 export const Route = createRootRoute({
   head: () => ({
@@ -34,8 +35,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body>
-        {children}
+      <body className="dark">
+        <TooltipProvider>{children}</TooltipProvider>
         <TanStackDevtools
           config={{
             position: "bottom-right",
