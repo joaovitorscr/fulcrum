@@ -9,103 +9,172 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as privateRouteRouteImport } from './routes/(private)/route'
-import { Route as privateIndexRouteImport } from './routes/(private)/index'
-import { Route as privateProjectsIndexRouteImport } from './routes/(private)/projects.index'
+import { Route as publicRouteRouteImport } from './routes/(public)/route'
+import { Route as authenticatedRouteRouteImport } from './routes/(authenticated)/route'
+import { Route as authenticatedIndexRouteImport } from './routes/(authenticated)/index'
+import { Route as publicRegisterRouteImport } from './routes/(public)/register'
+import { Route as publicSignInIndexRouteImport } from './routes/(public)/sign-in.index'
+import { Route as authenticatedProjectsIndexRouteImport } from './routes/(authenticated)/projects.index'
 
-const privateRouteRoute = privateRouteRouteImport.update({
-  id: '/(private)',
+const publicRouteRoute = publicRouteRouteImport.update({
+  id: '/(public)',
   getParentRoute: () => rootRouteImport,
 } as any)
-const privateIndexRoute = privateIndexRouteImport.update({
+const authenticatedRouteRoute = authenticatedRouteRouteImport.update({
+  id: '/(authenticated)',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const authenticatedIndexRoute = authenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => privateRouteRoute,
+  getParentRoute: () => authenticatedRouteRoute,
 } as any)
-const privateProjectsIndexRoute = privateProjectsIndexRouteImport.update({
-  id: '/projects/',
-  path: '/projects/',
-  getParentRoute: () => privateRouteRoute,
+const publicRegisterRoute = publicRegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => publicRouteRoute,
 } as any)
+const publicSignInIndexRoute = publicSignInIndexRouteImport.update({
+  id: '/sign-in/',
+  path: '/sign-in/',
+  getParentRoute: () => publicRouteRoute,
+} as any)
+const authenticatedProjectsIndexRoute =
+  authenticatedProjectsIndexRouteImport.update({
+    id: '/projects/',
+    path: '/projects/',
+    getParentRoute: () => authenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof privateIndexRoute
-  '/projects/': typeof privateProjectsIndexRoute
+  '/register': typeof publicRegisterRoute
+  '/': typeof authenticatedIndexRoute
+  '/projects/': typeof authenticatedProjectsIndexRoute
+  '/sign-in/': typeof publicSignInIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof privateIndexRoute
-  '/projects': typeof privateProjectsIndexRoute
+  '/register': typeof publicRegisterRoute
+  '/': typeof authenticatedIndexRoute
+  '/projects': typeof authenticatedProjectsIndexRoute
+  '/sign-in': typeof publicSignInIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/(private)': typeof privateRouteRouteWithChildren
-  '/(private)/': typeof privateIndexRoute
-  '/(private)/projects/': typeof privateProjectsIndexRoute
+  '/(authenticated)': typeof authenticatedRouteRouteWithChildren
+  '/(public)': typeof publicRouteRouteWithChildren
+  '/(public)/register': typeof publicRegisterRoute
+  '/(authenticated)/': typeof authenticatedIndexRoute
+  '/(authenticated)/projects/': typeof authenticatedProjectsIndexRoute
+  '/(public)/sign-in/': typeof publicSignInIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/projects/'
+  fullPaths: '/register' | '/' | '/projects/' | '/sign-in/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/projects'
-  id: '__root__' | '/(private)' | '/(private)/' | '/(private)/projects/'
+  to: '/register' | '/' | '/projects' | '/sign-in'
+  id:
+    | '__root__'
+    | '/(authenticated)'
+    | '/(public)'
+    | '/(public)/register'
+    | '/(authenticated)/'
+    | '/(authenticated)/projects/'
+    | '/(public)/sign-in/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  privateRouteRoute: typeof privateRouteRouteWithChildren
+  authenticatedRouteRoute: typeof authenticatedRouteRouteWithChildren
+  publicRouteRoute: typeof publicRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/(private)': {
-      id: '/(private)'
+    '/(public)': {
+      id: '/(public)'
       path: ''
       fullPath: ''
-      preLoaderRoute: typeof privateRouteRouteImport
+      preLoaderRoute: typeof publicRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(private)/': {
-      id: '/(private)/'
+    '/(authenticated)': {
+      id: '/(authenticated)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof authenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(authenticated)/': {
+      id: '/(authenticated)/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof privateIndexRouteImport
-      parentRoute: typeof privateRouteRoute
+      preLoaderRoute: typeof authenticatedIndexRouteImport
+      parentRoute: typeof authenticatedRouteRoute
     }
-    '/(private)/projects/': {
-      id: '/(private)/projects/'
+    '/(public)/register': {
+      id: '/(public)/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof publicRegisterRouteImport
+      parentRoute: typeof publicRouteRoute
+    }
+    '/(public)/sign-in/': {
+      id: '/(public)/sign-in/'
+      path: '/sign-in'
+      fullPath: '/sign-in/'
+      preLoaderRoute: typeof publicSignInIndexRouteImport
+      parentRoute: typeof publicRouteRoute
+    }
+    '/(authenticated)/projects/': {
+      id: '/(authenticated)/projects/'
       path: '/projects'
       fullPath: '/projects/'
-      preLoaderRoute: typeof privateProjectsIndexRouteImport
-      parentRoute: typeof privateRouteRoute
+      preLoaderRoute: typeof authenticatedProjectsIndexRouteImport
+      parentRoute: typeof authenticatedRouteRoute
     }
   }
 }
 
-interface privateRouteRouteChildren {
-  privateIndexRoute: typeof privateIndexRoute
-  privateProjectsIndexRoute: typeof privateProjectsIndexRoute
+interface authenticatedRouteRouteChildren {
+  authenticatedIndexRoute: typeof authenticatedIndexRoute
+  authenticatedProjectsIndexRoute: typeof authenticatedProjectsIndexRoute
 }
 
-const privateRouteRouteChildren: privateRouteRouteChildren = {
-  privateIndexRoute: privateIndexRoute,
-  privateProjectsIndexRoute: privateProjectsIndexRoute,
+const authenticatedRouteRouteChildren: authenticatedRouteRouteChildren = {
+  authenticatedIndexRoute: authenticatedIndexRoute,
+  authenticatedProjectsIndexRoute: authenticatedProjectsIndexRoute,
 }
 
-const privateRouteRouteWithChildren = privateRouteRoute._addFileChildren(
-  privateRouteRouteChildren,
+const authenticatedRouteRouteWithChildren =
+  authenticatedRouteRoute._addFileChildren(authenticatedRouteRouteChildren)
+
+interface publicRouteRouteChildren {
+  publicRegisterRoute: typeof publicRegisterRoute
+  publicSignInIndexRoute: typeof publicSignInIndexRoute
+}
+
+const publicRouteRouteChildren: publicRouteRouteChildren = {
+  publicRegisterRoute: publicRegisterRoute,
+  publicSignInIndexRoute: publicSignInIndexRoute,
+}
+
+const publicRouteRouteWithChildren = publicRouteRoute._addFileChildren(
+  publicRouteRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
-  privateRouteRoute: privateRouteRouteWithChildren,
+  authenticatedRouteRoute: authenticatedRouteRouteWithChildren,
+  publicRouteRoute: publicRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 
 import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
+import type { startInstance } from './start.ts'
 declare module '@tanstack/react-start' {
   interface Register {
     ssr: true
     router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
   }
 }
